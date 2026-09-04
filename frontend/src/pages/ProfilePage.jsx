@@ -21,9 +21,9 @@ function Profile() {
       setBio(data.user.bio || "");
 
       if (data.user.profilePic) {
-        setPreview(
-          `http://localhost:5000${data.user.profilePic}`
-        );
+        // Changed localhost to Render live URL for production support
+        const cleanPath = data.user.profilePic.startsWith("/") ? data.user.profilePic : `/${data.user.profilePic}`;
+        setPreview(`https://syncchat-rfzq.onrender.com${cleanPath}`);
       }
     } catch (error) {
       console.log("Profile loading failed:", error);
@@ -57,9 +57,8 @@ function Profile() {
       setProfile(data.user);
 
       if (data.user.profilePic) {
-        setPreview(
-          `http://localhost:5000${data.user.profilePic}`
-        );
+        const cleanPath = data.user.profilePic.startsWith("/") ? data.user.profilePic : `/${data.user.profilePic}`;
+        setPreview(`https://syncchat-rfzq.onrender.com${cleanPath}`);
       }
 
       alert("Profile updated successfully!");
@@ -83,18 +82,14 @@ function Profile() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-5">
-
       <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-6">
-
         <h1 className="text-2xl font-bold text-violet-700 text-center mb-6">
           My Profile
         </h1>
 
         {/* Profile Photo */}
         <div className="flex flex-col items-center mb-6">
-
           <div className="w-28 h-28 rounded-full overflow-hidden bg-violet-600 text-white flex items-center justify-center text-4xl font-bold">
-
             {preview ? (
               <img
                 src={preview}
@@ -104,12 +99,10 @@ function Profile() {
             ) : (
               name?.charAt(0).toUpperCase()
             )}
-
           </div>
 
           <label className="mt-3 text-violet-600 font-semibold cursor-pointer">
             Change Photo
-
             <input
               type="file"
               accept="image/*"
@@ -117,14 +110,12 @@ function Profile() {
               className="hidden"
             />
           </label>
-
         </div>
 
         {/* Name */}
         <label className="block font-medium mb-1">
           Name
         </label>
-
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -133,20 +124,18 @@ function Profile() {
 
         {/* Email */}
         <label className="block font-medium mb-1">
-          Email
+          Email / Phone
         </label>
-
         <input
-          value={profile.email}
+          value={profile.email || profile.phone || ""}
           disabled
-          className="w-full border rounded-lg p-3 mb-4 bg-gray-100"
+          className="w-full border rounded-lg p-3 mb-4 bg-gray-100 text-gray-600"
         />
 
         {/* Bio */}
         <label className="block font-medium mb-1">
           Bio
         </label>
-
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
@@ -161,9 +150,7 @@ function Profile() {
         >
           Save Changes
         </button>
-
       </div>
-
     </div>
   );
 }

@@ -9,6 +9,7 @@ function StatusPage() {
   const [mediaFile, setMediaFile] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false); // Added Dark Mode state
 
   const fileInputRef = useRef(null);
 
@@ -153,8 +154,11 @@ function StatusPage() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-950 overflow-hidden">
-
+    <div
+      className={`flex h-screen overflow-hidden ${
+        darkMode ? "bg-gray-900 text-white" : "bg-slate-950 text-gray-800"
+      }`}
+    >
       {/* ==============================
           SIDE NAV
       ============================== */}
@@ -168,20 +172,35 @@ function StatusPage() {
           LEFT STATUS PANEL
       ============================== */}
 
-      <div className="w-full md:w-[390px] bg-white flex flex-col border-r border-gray-200">
-
+      <div
+        className={`w-full md:w-[390px] flex flex-col border-r ${
+          darkMode
+            ? "bg-gray-800 border-gray-700 text-white"
+            : "bg-white border-gray-200 text-gray-800"
+        }`}
+      >
         {/* HEADER */}
 
-        <div className="px-6 py-5 border-b border-gray-200">
-
+        <div
+          className={`px-6 py-5 border-b ${
+            darkMode ? "border-gray-700" : "border-gray-200"
+          }`}
+        >
           <div className="flex items-center justify-between">
-
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1
+                className={`text-2xl font-bold ${
+                  darkMode ? "text-white" : "text-gray-900"
+                }`}
+              >
                 Status
               </h1>
 
-              <p className="text-sm text-gray-500 mt-1">
+              <p
+                className={`text-sm mt-1 ${
+                  darkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
                 Share moments with your contacts
               </p>
             </div>
@@ -189,66 +208,85 @@ function StatusPage() {
             <div className="w-11 h-11 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xl shadow-md">
               ✨
             </div>
-
           </div>
-
         </div>
 
         {/* SCROLL CONTENT */}
 
         <div className="flex-1 overflow-y-auto p-5">
-
           {/* CREATE STATUS */}
 
-          <div className="rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-100 p-5 shadow-sm">
-
+          <div
+            className={`rounded-2xl border p-5 shadow-sm ${
+              darkMode
+                ? "bg-gray-700/50 border-gray-600"
+                : "bg-gradient-to-br from-violet-50 to-indigo-50 border-violet-100"
+            }`}
+          >
             <div className="flex items-center gap-3 mb-5">
-
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xl">
                 +
               </div>
 
               <div>
-                <h2 className="font-bold text-gray-800">
+                <h2
+                  className={`font-bold ${
+                    darkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
                   Create Status
                 </h2>
 
-                <p className="text-xs text-gray-500">
+                <p
+                  className={`text-xs ${
+                    darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
                   Share text, photo or video
                 </p>
               </div>
-
             </div>
 
             <form
               onSubmit={handleUploadStatus}
               className="space-y-4"
             >
-
               {/* FILE */}
 
               <div>
-
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   Add media
                 </label>
 
-                <label className="flex items-center justify-center gap-2 border-2 border-dashed border-violet-300 rounded-xl p-4 cursor-pointer bg-white hover:bg-violet-50 transition">
-
-                  <span className="text-2xl">
-                    📷
-                  </span>
+                <label
+                  className={`flex items-center justify-center gap-2 border-2 border-dashed rounded-xl p-4 cursor-pointer transition ${
+                    darkMode
+                      ? "border-gray-600 bg-gray-800 hover:bg-gray-700"
+                      : "border-violet-300 bg-white hover:bg-violet-50"
+                  }`}
+                >
+                  <span className="text-2xl">📷</span>
 
                   <div className="text-center">
-
-                    <p className="text-sm font-semibold text-violet-700">
+                    <p
+                      className={`text-sm font-semibold ${
+                        darkMode ? "text-violet-400" : "text-violet-700"
+                      }`}
+                    >
                       Choose Photo / Video
                     </p>
 
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p
+                      className={`text-xs mt-1 ${
+                        darkMode ? "text-gray-400" : "text-gray-400"
+                      }`}
+                    >
                       Optional
                     </p>
-
                   </div>
 
                   <input
@@ -258,7 +296,6 @@ function StatusPage() {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-
                 </label>
 
                 {mediaFile && (
@@ -266,14 +303,16 @@ function StatusPage() {
                     ✓ {mediaFile.name}
                   </div>
                 )}
-
               </div>
 
               {/* CAPTION */}
 
               <div>
-
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   Your message
                 </label>
 
@@ -284,9 +323,12 @@ function StatusPage() {
                   }
                   rows="4"
                   placeholder="What's on your mind?"
-                  className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm outline-none resize-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition"
+                  className={`w-full border rounded-xl p-3 text-sm outline-none resize-none transition ${
+                    darkMode
+                      ? "bg-gray-800 border-gray-600 text-white focus:border-violet-400"
+                      : "bg-white border-gray-200 text-gray-800 focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+                  }`}
                 />
-
               </div>
 
               {/* POST BUTTON */}
@@ -300,18 +342,18 @@ function StatusPage() {
                   ? "Posting..."
                   : "Post Status"}
               </button>
-
             </form>
-
           </div>
 
           {/* RECENT UPDATES */}
 
           <div className="mt-7">
-
             <div className="flex items-center justify-between mb-3">
-
-              <h3 className="text-sm font-bold text-gray-800">
+              <h3
+                className={`text-sm font-bold ${
+                  darkMode ? "text-gray-200" : "text-gray-800"
+                }`}
+              >
                 Recent Updates
               </h3>
 
@@ -319,104 +361,92 @@ function StatusPage() {
                 {statuses.length} status
                 {statuses.length !== 1 ? "es" : ""}
               </span>
-
             </div>
 
             {statuses.length === 0 ? (
-
               <div className="text-center py-12">
+                <div className="text-5xl mb-3">📭</div>
 
-                <div className="text-5xl mb-3">
-                  📭
-                </div>
-
-                <p className="text-sm font-medium text-gray-500">
+                <p
+                  className={`text-sm font-medium ${
+                    darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
                   No status updates
                 </p>
 
                 <p className="text-xs text-gray-400 mt-1">
                   Create your first status
                 </p>
-
               </div>
-
             ) : (
-
               <div className="space-y-2">
-
                 {statuses.map((status) => (
-
                   <div
                     key={status._id}
                     onClick={() =>
                       setSelectedStatus(status)
                     }
-                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition ${
+                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition border ${
                       selectedStatus?._id === status._id
-                        ? "bg-violet-50 border-violet-200"
-                        : "hover:bg-gray-50 border-gray-100"
-                    } border`}
+                        ? darkMode
+                          ? "bg-gray-700 border-violet-500"
+                          : "bg-violet-50 border-violet-200"
+                        : darkMode
+                        ? "bg-gray-800 border-gray-700 hover:bg-gray-700/50"
+                        : "bg-white border-gray-100 hover:bg-gray-50"
+                    }`}
                   >
-
                     {/* PROFILE */}
 
                     <div className="w-12 h-12 rounded-full p-[2px] bg-gradient-to-br from-violet-500 to-indigo-500 flex-shrink-0">
-
                       <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
-
                         {status.userId?.profilePic ? (
-
                           <img
                             src={`http://localhost:5000${status.userId.profilePic}`}
                             alt=""
                             className="w-full h-full object-cover"
                           />
-
                         ) : (
-
                           <span className="font-bold text-violet-600">
                             {status.userId?.name?.[0] ||
                               "U"}
                           </span>
-
                         )}
-
                       </div>
-
                     </div>
 
                     {/* DETAILS */}
 
                     <div className="min-w-0 flex-1">
-
-                      <h4 className="font-semibold text-gray-800 truncate">
+                      <h4
+                        className={`font-semibold truncate ${
+                          darkMode ? "text-white" : "text-gray-800"
+                        }`}
+                      >
                         {status.userId?.name ||
                           "User"}
                       </h4>
 
-                      <p className="text-xs text-gray-500 truncate mt-1">
+                      <p
+                        className={`text-xs truncate mt-1 ${
+                          darkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
                         {status.caption ||
                           "📷 Media Status"}
                       </p>
-
                     </div>
 
-                    <span className="text-gray-300">
+                    <span className="text-gray-400">
                       ›
                     </span>
-
                   </div>
-
                 ))}
-
               </div>
-
             )}
-
           </div>
-
         </div>
-
       </div>
 
       {/* ==============================
@@ -424,11 +454,8 @@ function StatusPage() {
       ============================== */}
 
       <div className="hidden md:flex flex-1 relative items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
-
         {selectedStatus ? (
-
           <div className="relative w-full h-full flex items-center justify-center p-8">
-
             {/* CLOSE */}
 
             <button
@@ -443,34 +470,24 @@ function StatusPage() {
             {/* STATUS CARD */}
 
             <div className="relative w-full max-w-[520px] h-[82vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-
               {/* USER HEADER */}
 
               <div className="absolute top-0 left-0 right-0 z-10 p-5 bg-gradient-to-b from-black/80 to-transparent">
-
                 <div className="flex items-center gap-3">
-
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-violet-600 flex items-center justify-center text-white font-bold">
-
                     {selectedStatus.userId?.profilePic ? (
-
                       <img
                         src={`http://localhost:5000${selectedStatus.userId.profilePic}`}
                         alt=""
                         className="w-full h-full object-cover"
                       />
-
                     ) : (
-
                       selectedStatus.userId?.name?.[0] ||
                       "U"
-
                     )}
-
                   </div>
 
                   <div>
-
                     <p className="text-white font-semibold">
                       {selectedStatus.userId?.name ||
                         "User"}
@@ -479,67 +496,48 @@ function StatusPage() {
                     <p className="text-white/60 text-xs">
                       Status
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
 
               {/* MEDIA */}
 
               <div className="w-full h-full flex items-center justify-center">
-
                 {selectedStatus.mediaUrl ? (
-
                   isVideo(
                     selectedStatus.mediaUrl
                   ) ? (
-
                     <video
                       src={`http://localhost:5000${selectedStatus.mediaUrl}`}
                       controls
                       autoPlay
                       className="w-full h-full object-contain"
                     />
-
                   ) : (
-
                     <img
                       src={`http://localhost:5000${selectedStatus.mediaUrl}`}
                       alt="Status"
                       className="w-full h-full object-contain"
                     />
-
                   )
-
                 ) : (
-
                   <div className="w-full h-full flex items-center justify-center p-10 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-800">
-
                     <p className="text-white text-3xl font-bold text-center leading-relaxed">
                       "{selectedStatus.caption}"
                     </p>
-
                   </div>
-
                 )}
-
               </div>
 
               {/* CAPTION */}
 
               {selectedStatus.mediaUrl &&
                 selectedStatus.caption && (
-
                   <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent">
-
                     <p className="text-white text-center text-sm">
                       {selectedStatus.caption}
                     </p>
-
                   </div>
-
                 )}
 
               {/* DELETE */}
@@ -547,7 +545,6 @@ function StatusPage() {
               {String(
                 selectedStatus.userId?._id
               ) === String(currentUserId) && (
-
                 <button
                   onClick={() =>
                     handleDeleteStatus(
@@ -558,17 +555,11 @@ function StatusPage() {
                 >
                   🗑 Delete
                 </button>
-
               )}
-
             </div>
-
           </div>
-
         ) : (
-
           <div className="text-center">
-
             <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur mx-auto flex items-center justify-center text-5xl mb-6">
               👀
             </div>
@@ -581,13 +572,9 @@ function StatusPage() {
               Select a status from the left
               to view it
             </p>
-
           </div>
-
         )}
-
       </div>
-
     </div>
   );
 }

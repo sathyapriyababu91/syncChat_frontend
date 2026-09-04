@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
+import { sendOTP, verifyOTP } from "../services/otpService"; 
 
 function Login() {
   const navigate = useNavigate();
@@ -30,11 +30,10 @@ function Login() {
       setLoading(true);
       setMessage("");
 
-      const res = await api.post("/otp/send", {
-        phone: phoneNumber,
-      });
+      // Using otpService which includes /api prefix safely
+      const data = await sendOTP(phoneNumber);
 
-      console.log("Send OTP response:", res.data);
+      console.log("Send OTP response:", data);
       setOtpSent(true);
       setMessage("OTP sent successfully ✅");
     } catch (error) {
@@ -62,18 +61,16 @@ function Login() {
       setLoading(true);
       setMessage("");
 
-      const res = await api.post("/otp/verify", {
-        phone: phone.trim(),
-        otp: otp.trim(),
-      });
+      // Using verifyOTP service
+      const data = await verifyOTP(phone.trim(), otp.trim());
 
-      console.log("OTP Verify response:", res.data);
+      console.log("OTP Verify response:", data);
 
-      if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userId", res.data.user._id);
-        localStorage.setItem("userName", res.data.user.name || "");
-        localStorage.setItem("phone", res.data.user.phone);
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user._id);
+        localStorage.setItem("userName", data.user.name || "");
+        localStorage.setItem("phone", data.user.phone);
 
         setMessage("Login successful ✅");
         navigate("/home");

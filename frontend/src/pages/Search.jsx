@@ -30,12 +30,11 @@ function Search() {
     try {
       setLoadingId(receiverId);
 
-      // Fixed: import panna 'sendContactRequest' function name use panni irukkom
       const data = await sendContactRequest(receiverId);
-      alert(data.message || "Request Sent Successfully");
+      alert(data.message || "Request Sent Successfully ✅");
     } catch (error) {
       console.log(error.response?.data || error.message);
-      alert(error.response?.data?.message || "Request Failed");
+      alert(error.response?.data?.message || "Request Failed ❌");
     } finally {
       setLoadingId(null);
     }
@@ -57,25 +56,29 @@ function Search() {
         />
 
         <div className="mt-6 space-y-3">
-          {users.map((user) => (
-            <div
-              key={user._id}
-              className="flex justify-between items-center border rounded-xl p-4"
-            >
-              <div>
-                <h2 className="font-semibold">{user.name || "User"}</h2>
-                <p className="text-sm text-gray-500">{user.phone}</p>
-              </div>
-
-              <button
-                onClick={() => handleRequest(user._id)}
-                disabled={loadingId === user._id}
-                className="bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 disabled:bg-gray-400 transition"
+          {keyword.trim() !== "" && users.length === 0 ? (
+            <p className="text-center text-gray-500 py-4">No users found</p>
+          ) : (
+            users.map((user) => (
+              <div
+                key={user._id}
+                className="flex justify-between items-center border rounded-xl p-4 shadow-sm"
               >
-                {loadingId === user._id ? "Sending..." : "Add Friend"}
-              </button>
-            </div>
-          ))}
+                <div>
+                  <h2 className="font-semibold text-gray-800">{user.name || "User"}</h2>
+                  <p className="text-sm text-gray-500">{user.phone}</p>
+                </div>
+
+                <button
+                  onClick={() => handleRequest(user._id)}
+                  disabled={loadingId === user._id}
+                  className="bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 disabled:bg-gray-400 transition font-medium text-sm"
+                >
+                  {loadingId === user._id ? "Sending..." : "Add Friend"}
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

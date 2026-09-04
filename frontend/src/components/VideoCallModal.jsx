@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // Public STUN Configuration
 const iceServersConfig = {
@@ -13,6 +13,9 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
+
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
 
   useEffect(() => {
     const pc = new RTCPeerConnection(iceServersConfig);
@@ -34,7 +37,7 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
       })
       .catch((err) => console.error("Media devices access error:", err));
 
-    // 2. Main Fix: Attach Remote Stream to Main Screen
+    // 2. Attach Remote Stream to Main Screen
     pc.ontrack = (event) => {
       console.log("🟢 Remote Stream Received:", event.streams[0]);
       if (remoteVideoRef.current && event.streams[0]) {
@@ -114,9 +117,31 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
     }
   };
 
+  // Toggle Audio Mute
+  const toggleAudio = () => {
+    if (localStreamRef.current) {
+      const audioTrack = localStreamRef.current.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setIsAudioMuted(!audioTrack.enabled);
+      }
+    }
+  };
+
+  // Toggle Video Off
+  const toggleVideo = () => {
+    if (localStreamRef.current) {
+      const videoTrack = localStreamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setIsVideoOff(!videoTrack.enabled);
+      }
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center p-4 z-50">
-      <div className="relative w-full max-w-3xl h-[500px] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 flex flex-col">
+      <div className="relative w-full max-w-3xl h-[520px] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 flex flex-col">
         
         {/* Remote Video (Main Display) */}
         <div className="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
@@ -140,17 +165,35 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
         </div>
 
         {/* Action Call Controls */}
-        <div className="p-4 bg-slate-950 flex items-center justify-center gap-4">
+        <div className="p-4 bg-slate-950 flex items-center justify-center gap-3 flex-wrap">
           <button
             onClick={handleStartCall}
-            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-lg transition-colors"
+            className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl text-xs transition shadow-md"
           >
             Start Call 📞
+          </button>
+
+          <button
+            onClick={toggleAudio}
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs transition shadow-md text-white ${
+              isAudioMuted ? "bg-amber-600 hover:bg-amber-700" : "bg-slate-700 hover:bg-slate-600"
+            }`}
+          >
+            {isAudioMuted ? "Unmute 🎤" : "Mute 🎤"}
+          </button>
+
+          <button
+            onClick={toggleVideo}
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs transition shadow-md text-white ${
+              isVideoOff ? "bg-amber-600 hover:bg-amber-700" : "bg-slate-700 hover:bg-slate-600"
+            }`}
+          >
+            {isVideoOff ? "Start Video 📹" : "Stop Video 📹"}
           </button>
           
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-full shadow-lg transition-colors"
+            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs transition shadow-md"
           >
             End Call 🔴
           </button>

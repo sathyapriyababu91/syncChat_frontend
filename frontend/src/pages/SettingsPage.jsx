@@ -277,7 +277,7 @@ function SettingsPage() {
             </div>
           </div>
 
-          {/* ACCOUNT & SUPPORT */}
+          {/* PREFERENCES / ACCOUNT & SUPPORT */}
           <div
             className={`p-3.5 rounded-xl border ${
               darkMode
@@ -306,7 +306,7 @@ function SettingsPage() {
               <span className="text-gray-400">›</span>
             </div>
 
-            {/* HELP & SUPPORT (NEW FEATURE) */}
+            {/* HELP & SUPPORT */}
             <div
               onClick={() => setShowHelpModal(true)}
               className={`flex items-center justify-between py-1.5 cursor-pointer border-t border-slate-200/50 dark:border-gray-600/50 ${

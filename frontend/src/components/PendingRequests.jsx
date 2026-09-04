@@ -31,7 +31,7 @@ function PendingRequests({ onRequestAccepted }) {
     try {
       const data = await acceptRequest(requestId);
 
-      alert(data.message);
+      alert(data.message || "Friend request accepted!");
 
       // Remove request from pending list
       setRequests((prev) =>
@@ -54,7 +54,7 @@ function PendingRequests({ onRequestAccepted }) {
     try {
       const data = await rejectRequest(requestId);
 
-      alert(data.message);
+      alert(data.message || "Friend request rejected!");
 
       setRequests((prev) =>
         prev.filter((request) => request._id !== requestId)
@@ -85,7 +85,7 @@ function PendingRequests({ onRequestAccepted }) {
 
   return (
     <div className="p-4">
-      <h2 className="font-bold text-lg mb-4">
+      <h2 className="font-bold text-lg mb-4 text-gray-800">
         Friend Requests
       </h2>
 
@@ -96,15 +96,15 @@ function PendingRequests({ onRequestAccepted }) {
           return (
             <div
               key={request._id}
-              className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border"
+              className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200 shadow-sm"
             >
               {/* Profile */}
-              <div className="w-11 h-11 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold">
+              <div className="w-11 h-11 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold overflow-hidden shrink-0">
                 {user?.profilePic ? (
                   <img
                     src={`http://localhost:5000${user.profilePic}`}
                     alt={user.name}
-                    className="w-full h-full rounded-full object-cover"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   user?.name?.charAt(0).toUpperCase()
@@ -113,7 +113,7 @@ function PendingRequests({ onRequestAccepted }) {
 
               {/* User details */}
               <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">
+                <p className="font-semibold text-sm truncate text-gray-800">
                   {user?.name}
                 </p>
 
@@ -123,17 +123,17 @@ function PendingRequests({ onRequestAccepted }) {
               </div>
 
               {/* Buttons */}
-              <div className="flex gap-2">
+              <div className="flex gap-2 shrink-0">
                 <button
                   onClick={() => handleAccept(request._id)}
-                  className="px-3 py-2 bg-green-500 text-white text-xs rounded-lg hover:bg-green-600"
+                  className="px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition"
                 >
                   Accept
                 </button>
 
                 <button
                   onClick={() => handleReject(request._id)}
-                  className="px-3 py-2 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600"
+                  className="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition"
                 >
                   Reject
                 </button>

@@ -31,7 +31,7 @@ function Home() {
   const [callType, setCallType] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
   const [incomingCall, setIncomingCall] = useState(null);
-  const [activeCallUser, setActiveCallUser] = useState(null); // Call screen-ல் பெயர் காட்டுவதற்கு
+  const [activeCallUser, setActiveCallUser] = useState(null);
 
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
@@ -668,7 +668,6 @@ function Home() {
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
-      {/* Hidden global audio element for audio calls */}
       <audio ref={remoteAudioRef} autoPlay playsInline />
 
       <SideNav activeTab={activeTab} setActiveTab={setActiveTab} />

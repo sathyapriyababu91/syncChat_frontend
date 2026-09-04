@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Navigation added
+import { useNavigate } from "react-router-dom";
 
 const PhoneAuth = () => {
   const [phone, setPhone] = useState("");
@@ -92,91 +92,69 @@ const PhoneAuth = () => {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "400px",
-        margin: "50px auto",
-        padding: "20px",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        textAlign: "center",
-      }}
-    >
-      <h2>SyncChat Phone Login</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">SyncChat Login</h2>
+        <p className="text-xs text-gray-500 mb-6">Enter your mobile number to get started</p>
 
-      {/* Phone Input */}
-      <input
-        type="tel"
-        placeholder="+919500446636"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        disabled={loading || otpSent}
-        style={{
-          width: "100%",
-          padding: "10px",
-          marginBottom: "10px",
-          boxSizing: "border-box",
-        }}
-      />
+        {/* Phone Input */}
+        <input
+          type="tel"
+          placeholder="+919500446636"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          disabled={loading || otpSent}
+          className="w-full p-3 rounded-xl border border-gray-300 bg-gray-50 outline-none focus:ring-2 focus:ring-violet-500 text-sm mb-4 disabled:bg-gray-100"
+        />
 
-      {/* Send OTP Button */}
-      {!otpSent && (
-        <button
-          onClick={sendOTP}
-          disabled={loading}
-          style={{
-            padding: "10px 20px",
-            width: "100%",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Sending..." : "Send OTP"}
-        </button>
-      )}
-
-      {/* OTP Input & Verify Button */}
-      {otpSent && (
-        <>
-          <input
-            type="text"
-            placeholder="Enter 6-digit OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            maxLength={6}
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginTop: "15px",
-              marginBottom: "10px",
-              boxSizing: "border-box",
-            }}
-          />
-
+        {/* Send OTP Button */}
+        {!otpSent ? (
           <button
-            onClick={verifyOTP}
+            onClick={sendOTP}
             disabled={loading}
-            style={{
-              padding: "10px 20px",
-              width: "100%",
-              backgroundColor: "#28a745",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition disabled:opacity-50 text-sm shadow-sm"
           >
-            {loading ? "Verifying..." : "Verify OTP"}
+            {loading ? "Sending..." : "Send OTP"}
           </button>
-        </>
-      )}
+        ) : (
+          <div className="space-y-4">
+            {/* OTP Input */}
+            <input
+              type="text"
+              placeholder="Enter 6-digit OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              maxLength={6}
+              className="w-full p-3 rounded-xl border border-gray-300 bg-gray-50 outline-none focus:ring-2 focus:ring-violet-500 text-sm text-center tracking-widest font-bold"
+            />
 
-      {message && (
-        <p style={{ marginTop: "15px", fontWeight: "bold" }}>{message}</p>
-      )}
+            {/* Verify Button */}
+            <button
+              onClick={verifyOTP}
+              disabled={loading}
+              className="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition disabled:opacity-50 text-sm shadow-sm"
+            >
+              {loading ? "Verifying..." : "Verify OTP"}
+            </button>
+
+            {/* Change Number Option */}
+            <button
+              onClick={() => {
+                setOtpSent(false);
+                setOtp("");
+                setMessage("");
+              }}
+              className="text-xs text-violet-600 hover:underline font-medium block mx-auto"
+            >
+              Change Phone Number?
+            </button>
+          </div>
+        )}
+
+        {message && (
+          <p className="mt-4 text-xs font-semibold text-gray-700">{message}</p>
+        )}
+      </div>
     </div>
   );
 };

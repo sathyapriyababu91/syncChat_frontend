@@ -55,7 +55,8 @@ function Calls({ onStartAudioCall, onStartVideoCall }) {
     if (!imagePath) return "";
     if (imagePath.startsWith("http")) return imagePath;
     const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
-    return `http://localhost:5000${cleanPath}`;
+    // Render backend base URL-ah dynamically or fallback to render url use panrathu safe
+    return `https://syncchat-rfzq.onrender.com${cleanPath}`;
   };
 
   return (
@@ -100,7 +101,6 @@ function Calls({ onStartAudioCall, onStartVideoCall }) {
                     alt={partner?.name || "User"}
                     className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200"
                     onError={(e) => {
-                      // Image error வந்தால் உடைந்த image icon தெரியாமல் தவிர்க்க avatar UI-க்கு மாற்றுதல்
                       e.target.style.display = "none";
                       if (e.target.nextSibling) {
                         e.target.nextSibling.style.display = "flex";

@@ -47,14 +47,14 @@ function MessageInput({
     if (!message.trim() && !selectedFile) return;
 
     if (selectedFile) {
+      onSendMessage(message.trim(), selectedFile);
       setSelectedFile(null);
-    }
-
-    if (message.trim()) {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } else if (message.trim()) {
       onSendMessage(message.trim());
-      setMessage("");
     }
 
+    setMessage("");
     setShowEmojiPicker(false);
 
     if (selectedUser && socket) {

@@ -5,32 +5,45 @@ import { sendContactRequest } from "../services/contactService";
 function Search() {
   const [keyword, setKeyword] = useState("");
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
+  const [sentRequests, setSentRequests] = useState({}); // Track requested users
 
   useEffect(() => {
-    if (keyword.trim() === "") {
+    const trimmedKeyword = keyword.trim();
+    if (trimmedKeyword === "") {
       setUsers([]);
       return;
     }
 
-    loadUsers();
+    // Debounce to prevent too many API calls while typing
+    const timer = setTimeout(() => {
+      loadUsers(trimmedKeyword);
+    }, 3005); // 300ms delay
+
+    return () => clearTimeout(timer);
   }, [keyword]);
 
-  const loadUsers = async () => {
+  const loadUsers = async (searchQuery) => {
     try {
-      const data = await searchUsers(keyword);
+      setLoading(true);
+      const data = await searchUsers(searchQuery);
       setUsers(data.users || []);
     } catch (error) {
-      console.log(error);
+      console.log("Search error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleAddFriend = async (receiverId) => {
     try {
-      const res = await sendContactRequest(receiverId);
-      setStatusMsg("Contact request sent successfully!");
+      await sendContactRequest(receiverId);
       
-      // Clear status message after 3 seconds
+      // Mark this specific user as request sent
+      setSentRequests((prev) => ({ ...prev, [receiverId]: true }));
+      setStatusMsg("Contact request sent successfully!");
+
       setTimeout(() => setStatusMsg(""), 3000);
     } catch (error) {
       setStatusMsg(error.response?.data?.message || "Failed to send request");
@@ -50,34 +63,51 @@ function Search() {
           placeholder="Search by phone number or name..."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-violet-500 text-sm"
         />
 
         {statusMsg && (
-          <p className="mt-3 text-sm text-center font-medium text-violet-600">
+          <p className="mt-3 text-sm text-center font-medium text-violet-600 bg-violet-50 p-2 rounded-lg">
             {statusMsg}
           </p>
         )}
 
-        <div className="mt-6 space-y-3">
-          {users.map((user) => (
-            <div
-              key={user._id}
-              className="flex justify-between items-center border rounded-xl p-4"
-            >
-              <div>
-                <h2 className="font-semibold">{user.name || "User"}</h2>
-                <p className="text-sm text-gray-500">{user.phone}</p>
-              </div>
+        {loading && (
+          <p className="text-center text-gray-400 text-xs mt-4">Searching...</p>
+        )}
 
-              <button
-                onClick={() => handleAddFriend(user._id)}
-                className="bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 transition"
+        <div className="mt-6 space-y-3">
+          {users.map((user) => {
+            const isRequested = sentRequests[user._id];
+
+            return (
+              <div
+                key={user._id}
+                className="flex justify-between items-center border border-gray-200 bg-gray-50 rounded-xl p-4 shadow-sm"
               >
-                Add Friend
-              </button>
-            </div>
-          ))}
+                <div>
+                  <h2 className="font-semibold text-gray-800">{user.name || "User"}</h2>
+                  <p className="text-xs text-gray-500">{user.phone}</p>
+                </div>
+
+                <button
+                  onClick={() => handleAddFriend(user._id)}
+                  disabled={isRequested}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition ${
+                    isRequested
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-violet-600 text-white hover:bg-violet-700"
+                  }`}
+                >
+                  {isRequested ? "Requested ✓" : "Add Friend"}
+                </button>
+              </div>
+            );
+          })}
+
+          {!loading && keyword.trim() !== "" && users.length === 0 && (
+            <p className="text-center text-gray-500 text-sm py-4">No users found</p>
+          )}
         </div>
       </div>
     </div>
