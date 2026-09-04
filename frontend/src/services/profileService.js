@@ -1,28 +1,15 @@
-import axios from "axios";
-
-const API = "http://localhost:5000/api/users/profile";
-
-const getToken = () => {
-  return localStorage.getItem("token");
-};
+import api from "./api";
 
 export const getProfile = async () => {
-  const response = await axios.get(API, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-    },
-  });
-
+  const response = await api.get("/api/users/profile");
   return response.data;
 };
 
 export const updateProfile = async (formData) => {
-  const response = await axios.put(API, formData, {
+  const response = await api.put("/api/users/profile", formData, {
     headers: {
-      Authorization: `Bearer ${getToken()}`,
       "Content-Type": "multipart/form-data",
     },
   });
-
   return response.data;
 };
