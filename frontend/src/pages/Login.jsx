@@ -28,7 +28,8 @@ function Login() {
       setLoading(true);
       setMessage("");
 
-      const response = await axios.post("http://localhost:5000/api/users/phone-login", {
+      // Live Backend URL மாற்றப்பட்டுள்ளது
+      const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/phone-login", {
         phone: phoneNumber,
         name: name.trim(),
       });
@@ -57,7 +58,6 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-        {/* Changed text-green-600 to text-violet-600 */}
         <h1 className="text-3xl font-bold text-center text-violet-600 mb-6">
           SyncChat Login
         </h1>
@@ -80,7 +80,6 @@ function Login() {
               }}
               placeholder="+919876543210"
               disabled={loading}
-              // Changed focus:border-green-500 to focus:border-violet-500
               className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-violet-500"
             />
           </div>
@@ -95,7 +94,6 @@ function Login() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               disabled={loading}
-              // Changed focus:border-green-500 to focus:border-violet-500
               className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-violet-500"
             />
           </div>
@@ -103,7 +101,6 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            // Changed bg-green-600 and hover:bg-green-700 to violet
             className="w-full bg-violet-600 text-white py-3 rounded-lg hover:bg-violet-700 font-semibold transition"
           >
             {loading ? "Logging in..." : "Login / Register"}
@@ -118,7 +115,6 @@ function Login() {
 
         <p className="text-center mt-5 text-sm text-gray-600">
           New to SyncChat?{" "}
-          {/* Changed text-green-600 to text-violet-600 */}
           <Link to="/register" className="text-violet-600 font-semibold hover:underline">
             Register here
           </Link>

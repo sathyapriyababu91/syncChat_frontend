@@ -33,8 +33,8 @@ function Register() {
       setLoading(true);
       setMessage("");
 
-      const response = await axios.post("http://localhost:5000/api/users/phone-login", {
-        phone: phoneNumber,
+const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/phone-login", {
+          phone: phoneNumber,
         name: name.trim(),
       });
 
