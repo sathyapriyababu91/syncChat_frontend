@@ -1,18 +1,19 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import { Link, useNavigate } from "react-router-dom";
+import { sendOTP, verifyOTP } from "../services/otpService"; 
 
 function Register() {
   const navigate = useNavigate();
 
-  const [phone, setPhone] = useState("");
+  // 🌟 Default-ah +91 set panrom
+  const [phone, setPhone] = useState("+91");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleSendOTP = async () => {
-    if (!phone.trim()) {
+    if (!phone.trim() || phone === "+91") {
       setMessage("Please enter your phone number");
       return;
     }
@@ -30,13 +31,12 @@ function Register() {
       setLoading(true);
       setMessage("");
 
-      const res = await api.post("/otp/send", {
-        phone: phoneNumber,
-      });
+      // 🌟 Firebase sendOTP function call aagum
+      const data = await sendOTP(phoneNumber);
 
-      console.log("Register Send OTP:", res.data);
+      console.log("Register Send OTP:", data);
       setOtpSent(true);
-      setMessage("OTP sent successfully ✅");
+      setMessage("OTP sent successfully to your mobile ✅");
     } catch (error) {
       console.error(
         "OTP Send Error:",
@@ -45,6 +45,7 @@ function Register() {
 
       setMessage(
         error.response?.data?.message ||
+          error.message ||
           "Failed to send OTP ❌"
       );
     } finally {
@@ -62,18 +63,16 @@ function Register() {
       setLoading(true);
       setMessage("");
 
-      const res = await api.post("/otp/verify", {
-        phone: phone.trim(),
-        otp: otp.trim(),
-      });
+      // 🌟 Firebase verifyOTP & Backend MongoDB sync call aagum
+      const data = await verifyOTP(phone.trim(), otp.trim());
 
-      console.log("Register Verify OTP:", res.data);
+      console.log("Register Verify OTP:", data);
 
-      if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userId", res.data.user._id);
-        localStorage.setItem("userName", res.data.user.name || "");
-        localStorage.setItem("phone", res.data.user.phone);
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user._id);
+        localStorage.setItem("userName", data.user.name || "");
+        localStorage.setItem("phone", data.user.phone);
 
         setMessage("Phone number verified successfully ✅");
         navigate("/home");
@@ -86,6 +85,7 @@ function Register() {
 
       setMessage(
         error.response?.data?.message ||
+          error.message ||
           "Invalid or expired OTP ❌"
       );
     } finally {
@@ -104,12 +104,23 @@ function Register() {
           Enter your phone number
         </h2>
 
+        {/* 🌟 Firebase invisible reCAPTCHA container (Romba mukkiyam!) */}
+        <div id="recaptcha-container"></div>
+
         <div className="space-y-4">
           <input
             type="tel"
             placeholder="+919876543210"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              // 🌟 User +91-ah delete panrathai thavirka
+              const val = e.target.value;
+              if (val.startsWith("+91")) {
+                setPhone(val);
+              } else {
+                setPhone("+91" + val.replace(/^\+91/, ""));
+              }
+            }}
             disabled={otpSent || loading}
             className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-green-500"
           />
@@ -129,7 +140,7 @@ function Register() {
             <>
               <input
                 type="text"
-                placeholder="Enter OTP"
+                placeholder="Enter 6-digit OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 maxLength={6}
@@ -149,7 +160,7 @@ function Register() {
           )}
 
           {message && (
-            <p className="text-center text-sm font-medium text-gray-700">
+            <p className="text-center text-sm font-medium text-gray-700 mt-2">
               {message}
             </p>
           )}

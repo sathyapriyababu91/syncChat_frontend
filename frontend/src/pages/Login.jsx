@@ -5,14 +5,15 @@ import { sendOTP, verifyOTP } from "../services/otpService";
 function Login() {
   const navigate = useNavigate();
 
-  const [phone, setPhone] = useState("");
+  // Default-a +91 irukkum, user appuram 10 digits type pannikalam
+  const [phone, setPhone] = useState("+91");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleSendOTP = async () => {
-    if (!phone.trim()) {
+    if (!phone.trim() || phone === "+91") {
       setMessage("Please enter your phone number");
       return;
     }
@@ -30,12 +31,11 @@ function Login() {
       setLoading(true);
       setMessage("");
 
-      // Using otpService which includes /api prefix safely
       const data = await sendOTP(phoneNumber);
 
       console.log("Send OTP response:", data);
       setOtpSent(true);
-      setMessage("OTP sent successfully ✅");
+      setMessage("OTP sent successfully to your mobile ✅");
     } catch (error) {
       console.error(
         "OTP Send Error:",
@@ -44,6 +44,7 @@ function Login() {
 
       setMessage(
         error.response?.data?.message ||
+          error.message ||
           "Failed to send OTP ❌"
       );
     } finally {
@@ -61,7 +62,6 @@ function Login() {
       setLoading(true);
       setMessage("");
 
-      // Using verifyOTP service
       const data = await verifyOTP(phone.trim(), otp.trim());
 
       console.log("OTP Verify response:", data);
@@ -83,6 +83,7 @@ function Login() {
 
       setMessage(
         error.response?.data?.message ||
+          error.message ||
           "Invalid or expired OTP ❌"
       );
     } finally {
@@ -101,11 +102,22 @@ function Login() {
           Enter your phone number
         </h2>
 
+        {/* 🌟 Firebase reCAPTCHA container (romba mukkiyam!) */}
+        <div id="recaptcha-container"></div>
+
         <div className="space-y-4">
           <input
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              // User +91-ah azhikkatha madhiri handle panrathuku
+              const val = e.target.value;
+              if (val.startsWith("+91")) {
+                setPhone(val);
+              } else {
+                setPhone("+91" + val.replace(/^\+91/, ""));
+              }
+            }}
             placeholder="+919876543210"
             disabled={otpSent || loading}
             className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-green-500"
@@ -128,7 +140,7 @@ function Login() {
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter OTP"
+                placeholder="Enter 6-digit OTP"
                 maxLength={6}
                 disabled={loading}
                 className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-green-500"
@@ -146,7 +158,7 @@ function Login() {
           )}
 
           {message && (
-            <p className="text-center text-sm">
+            <p className="text-center text-sm font-medium mt-2">
               {message}
             </p>
           )}
