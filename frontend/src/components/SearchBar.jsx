@@ -16,10 +16,10 @@ function Search() {
       return;
     }
 
-    // Debounce to prevent too many API calls while typing
+    // Debounce to prevent too many API calls while typing (fixed to 300ms)
     const timer = setTimeout(() => {
       loadUsers(trimmedKeyword);
-    }, 3005); // 300ms delay
+    }, 300); // 300ms delay
 
     return () => clearTimeout(timer);
   }, [keyword]);

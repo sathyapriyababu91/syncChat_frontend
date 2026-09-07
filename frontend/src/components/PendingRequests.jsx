@@ -12,9 +12,7 @@ function PendingRequests({ onRequestAccepted }) {
   const loadRequests = async () => {
     try {
       setLoading(true);
-
       const data = await getPendingRequests();
-
       setRequests(data.requests || []);
     } catch (error) {
       console.log("Failed to load pending requests:", error);
@@ -30,7 +28,6 @@ function PendingRequests({ onRequestAccepted }) {
   const handleAccept = async (requestId) => {
     try {
       const data = await acceptRequest(requestId);
-
       alert(data.message || "Friend request accepted!");
 
       // Remove request from pending list
@@ -53,7 +50,6 @@ function PendingRequests({ onRequestAccepted }) {
   const handleReject = async (requestId) => {
     try {
       const data = await rejectRequest(requestId);
-
       alert(data.message || "Friend request rejected!");
 
       setRequests((prev) =>
@@ -69,37 +65,43 @@ function PendingRequests({ onRequestAccepted }) {
 
   if (loading) {
     return (
-      <p className="text-center text-gray-500 text-sm p-4">
-        Loading requests...
-      </p>
+      <div className="flex justify-center items-center p-8">
+        <p className="text-gray-400 text-xs font-medium animate-pulse">Loading requests...</p>
+      </div>
     );
   }
 
   if (requests.length === 0) {
     return (
-      <p className="text-center text-gray-500 text-sm p-4">
-        No friend requests
-      </p>
+      <div className="text-center py-8 px-4">
+        <div className="w-12 h-12 bg-violet-50 text-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl">✨</div>
+        <p className="text-gray-500 text-xs font-medium">No pending friend requests</p>
+      </div>
     );
   }
 
   return (
-    <div className="p-4">
-      <h2 className="font-bold text-lg mb-4 text-gray-800">
-        Friend Requests
-      </h2>
+    <div className="p-4 bg-white/60 backdrop-blur-md rounded-3xl border border-gray-100 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-bold text-sm text-gray-800 flex items-center gap-2">
+          <span>🤝</span> Friend Requests
+        </h2>
+        <span className="bg-violet-100 text-violet-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+          {requests.length}
+        </span>
+      </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {requests.map((request) => {
           const user = request.sender;
 
           return (
             <div
               key={request._id}
-              className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200 shadow-sm"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-white border border-gray-100 hover:border-violet-100 shadow-xs transition"
             >
               {/* Profile */}
-              <div className="w-11 h-11 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold overflow-hidden shrink-0">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center font-bold overflow-hidden shrink-0 shadow-md shadow-violet-500/15">
                 {user?.profilePic ? (
                   <img
                     src={`http://localhost:5000${user.profilePic}`}
@@ -113,27 +115,26 @@ function PendingRequests({ onRequestAccepted }) {
 
               {/* User details */}
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate text-gray-800">
+                <p className="font-semibold text-xs truncate text-gray-800">
                   {user?.name}
                 </p>
-
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-[11px] text-gray-400 truncate mt-0.5">
                   {user?.email}
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="flex gap-2 shrink-0">
+              <div className="flex gap-1.5 shrink-0">
                 <button
                   onClick={() => handleAccept(request._id)}
-                  className="px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition"
+                  className="px-3 py-1.5 bg-emerald-500 text-white text-[11px] font-semibold rounded-xl hover:bg-emerald-600 shadow-sm shadow-emerald-500/20 transition"
                 >
                   Accept
                 </button>
 
                 <button
                   onClick={() => handleReject(request._id)}
-                  className="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition"
+                  className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white text-[11px] font-semibold rounded-xl transition"
                 >
                   Reject
                 </button>

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
 
 function MessageInput({
@@ -16,6 +16,18 @@ function MessageInput({
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const fileInputRef = useRef(null);
+  const emojiPickerRef = useRef(null);
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -116,8 +128,9 @@ function MessageInput({
 
   return (
     <div className="relative shrink-0 p-3 sm:p-4 border-t bg-white flex items-center gap-2">
+      {/* EMOJI PICKER POPUP */}
       {showEmojiPicker && (
-        <div className="absolute bottom-16 left-4 z-50 shadow-2xl">
+        <div ref={emojiPickerRef} className="absolute bottom-16 left-4 z-50 shadow-2xl">
           <EmojiPicker onEmojiClick={handleEmojiClick} theme="light" />
         </div>
       )}
@@ -141,6 +154,7 @@ function MessageInput({
 
       <button
         type="button"
+        conClick={() => fileInputRef.current?.click()}
         onClick={() => fileInputRef.current?.click()}
         className="text-xl text-gray-500 hover:text-violet-600 transition p-1"
         title="Attach File"

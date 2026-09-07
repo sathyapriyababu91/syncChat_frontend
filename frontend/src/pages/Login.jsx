@@ -28,7 +28,6 @@ function Login() {
       setLoading(true);
       setMessage("");
 
-      // Live Backend URL மாற்றப்பட்டுள்ளது
       const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/phone-login", {
         phone: phoneNumber,
         name: name.trim(),
@@ -39,7 +38,9 @@ function Login() {
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.user._id);
+        // Home.jsx மற்றும் பிற பக்கங்களுடன் ஒத்துப்போக userName மற்றும் name இரண்டிலும் சேமிக்கிறோம்
         localStorage.setItem("userName", data.user.name || "");
+        localStorage.setItem("name", data.user.name || "");
         localStorage.setItem("phone", data.user.phone);
 
         setMessage("Login successful ✅");

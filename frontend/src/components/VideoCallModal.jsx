@@ -45,31 +45,31 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
       }
     };
 
-    // 3. ICE Candidate Signaling
+    // 3. ICE Candidate Signaling (Matched with backend: iceCandidate)
     pc.onicecandidate = (event) => {
       if (event.candidate && socket) {
-        socket.emit("ice-candidate", {
-          to: targetUserId,
+        socket.emit("iceCandidate", {
+          receiverId: targetUserId,
           candidate: event.candidate,
         });
       }
     };
 
-    // 4. Socket Listeners for WebRTC Handshake
+    // 4. Socket Listeners for WebRTC Handshake (Matched with backend)
     if (socket) {
-      socket.on("offer", async ({ from, offer }) => {
+      socket.on("webrtcOffer", async ({ from, offer }) => {
         try {
           await pc.setRemoteDescription(new RTCSessionDescription(offer));
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
 
-          socket.emit("answer", { to: from, answer });
+          socket.emit("webrtcAnswer", { callerId: targetUserId, answer });
         } catch (err) {
           console.error("Error handling offer:", err);
         }
       });
 
-      socket.on("answer", async ({ answer }) => {
+      socket.on("webrtcAnswer", async ({ answer }) => {
         try {
           await pc.setRemoteDescription(new RTCSessionDescription(answer));
         } catch (err) {
@@ -77,7 +77,7 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
         }
       });
 
-      socket.on("ice-candidate", async ({ candidate }) => {
+      socket.on("iceCandidate", async ({ candidate }) => {
         try {
           if (candidate) {
             await pc.addIceCandidate(new RTCIceCandidate(candidate));
@@ -95,14 +95,14 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
       }
       pc.close();
       if (socket) {
-        socket.off("offer");
-        socket.off("answer");
-        socket.off("ice-candidate");
+        socket.off("webrtcOffer");
+        socket.off("webrtcAnswer");
+        socket.off("iceCandidate");
       }
     };
   }, [targetUserId, socket]);
 
-  // Start Call Trigger
+  // Start Call Trigger (Matched with backend: webrtcOffer)
   const handleStartCall = async () => {
     const pc = peerConnectionRef.current;
     if (!pc) return;
@@ -111,7 +111,7 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
 
-      socket.emit("offer", { to: targetUserId, offer });
+      socket.emit("webrtcOffer", { receiverId: targetUserId, offer, from: currentUserId });
     } catch (err) {
       console.error("Start call error:", err);
     }
@@ -140,8 +140,8 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center p-4 z-50">
-      <div className="relative w-full max-w-3xl h-[520px] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-800 flex flex-col">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-3xl h-[520px] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 flex flex-col">
         
         {/* Remote Video (Main Display) */}
         <div className="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
@@ -153,7 +153,7 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
           />
           
           {/* Local Video (Self View Box) */}
-          <div className="absolute bottom-4 right-4 w-32 h-44 bg-slate-800 rounded-xl overflow-hidden border-2 border-white/50 shadow-xl z-10">
+          <div className="absolute bottom-4 right-4 w-32 h-44 bg-slate-800 rounded-2xl overflow-hidden border-2 border-white/30 shadow-2xl z-10">
             <video
               ref={localVideoRef}
               autoPlay
@@ -165,37 +165,37 @@ function VideoCallModal({ currentUserId, targetUserId, socket, onClose }) {
         </div>
 
         {/* Action Call Controls */}
-        <div className="p-4 bg-slate-950 flex items-center justify-center gap-3 flex-wrap">
+        <div className="p-4 bg-slate-950/90 backdrop-blur-md flex items-center justify-center gap-3 flex-wrap border-t border-slate-800/80">
           <button
             onClick={handleStartCall}
-            className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl text-xs transition shadow-md"
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs transition shadow-md shadow-emerald-600/20 flex items-center gap-1.5"
           >
-            Start Call 📞
+            <span>📞</span> Start Call
           </button>
 
           <button
             onClick={toggleAudio}
-            className={`px-4 py-2.5 rounded-xl font-semibold text-xs transition shadow-md text-white ${
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs transition shadow-md text-white flex items-center gap-1.5 ${
               isAudioMuted ? "bg-amber-600 hover:bg-amber-700" : "bg-slate-700 hover:bg-slate-600"
             }`}
           >
-            {isAudioMuted ? "Unmute 🎤" : "Mute 🎤"}
+            <span>🎤</span> {isAudioMuted ? "Unmute" : "Mute"}
           </button>
 
           <button
             onClick={toggleVideo}
-            className={`px-4 py-2.5 rounded-xl font-semibold text-xs transition shadow-md text-white ${
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs transition shadow-md text-white flex items-center gap-1.5 ${
               isVideoOff ? "bg-amber-600 hover:bg-amber-700" : "bg-slate-700 hover:bg-slate-600"
             }`}
           >
-            {isVideoOff ? "Start Video 📹" : "Stop Video 📹"}
+            <span>📹</span> {isVideoOff ? "Start Video" : "Stop Video"}
           </button>
           
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs transition shadow-md"
+            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs transition shadow-md shadow-red-600/20 flex items-center gap-1.5"
           >
-            End Call 🔴
+            <span>🔴</span> End Call
           </button>
         </div>
 

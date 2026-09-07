@@ -33,8 +33,8 @@ function Register() {
       setLoading(true);
       setMessage("");
 
-const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/phone-login", {
-          phone: phoneNumber,
+      const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/phone-login", {
+        phone: phoneNumber,
         name: name.trim(),
       });
 
@@ -43,7 +43,9 @@ const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.user._id);
+        // Home.jsx மற்றும் பிற பக்கங்களுடன் ஒத்துப்போக userName மற்றும் name இரண்டிலும் சேமிக்கிறோம்
         localStorage.setItem("userName", data.user.name || "");
+        localStorage.setItem("name", data.user.name || "");
         localStorage.setItem("phone", data.user.phone);
 
         setMessage("Registration successful ✅");
@@ -62,7 +64,6 @@ const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-        {/* Changed text-green-600 to text-violet-600 */}
         <h1 className="text-3xl font-bold text-center text-violet-600 mb-6">
           SyncChat Register
         </h1>
@@ -78,7 +79,6 @@ const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               disabled={loading}
-              // Changed focus:border-green-500 to focus:border-violet-500
               className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-violet-500"
             />
           </div>
@@ -100,7 +100,6 @@ const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/
               }}
               placeholder="+919876543210"
               disabled={loading}
-              // Changed focus:border-green-500 to focus:border-violet-500
               className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-violet-500"
             />
           </div>
@@ -108,7 +107,6 @@ const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/
           <button
             type="submit"
             disabled={loading}
-            // Changed bg-green-600 and hover:bg-green-700 to violet
             className="w-full bg-violet-600 text-white py-3 rounded-lg hover:bg-violet-700 font-semibold transition"
           >
             {loading ? "Registering..." : "Register"}
@@ -123,7 +121,6 @@ const response = await axios.post("https://syncchat-rfzq.onrender.com/api/users/
 
         <p className="text-center mt-5 text-sm text-gray-600">
           Already have an account?{" "}
-          {/* Changed text-green-600 to text-violet-600 */}
           <Link to="/" className="text-violet-600 font-semibold hover:underline">
             Login here
           </Link>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { getMessages } from "../services/messageService";
 import { searchUsers } from "../services/userService";
 import { sendRequest, removeContact } from "../services/contactService";
@@ -20,12 +20,11 @@ function ChatSidebar({
   // DROPDOWN & CUSTOM MODAL STATES
   const [activeMenuId, setActiveMenuId] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
-  const menuRef = useRef(null);
 
-  // Close dropdown menu when clicking outside
+  // Close dropdown menu when clicking outside anywhere on the document
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (!event.target.closest(".menu-container")) {
         setActiveMenuId(null);
       }
     };
@@ -308,10 +307,7 @@ function ChatSidebar({
                       )}
 
                       {/* 3 DOTS MENU BUTTON */}
-                      <div
-                        className="relative shrink-0"
-                        ref={activeMenuId === userId ? menuRef : null}
-                      >
+                      <div className="relative shrink-0 menu-container">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

@@ -581,7 +581,7 @@ function Home() {
 
       socket.emit("callUser", {
         callerId: currentUserId,
-        callerName: localStorage.getItem("name") || "User",
+        callerName: localStorage.getItem("nameName") || "User",
         receiverId: selectedUser._id,
         callType: "audio",
       });
@@ -667,142 +667,148 @@ function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden relative">
       <audio ref={remoteAudioRef} autoPlay playsInline />
 
-      <SideNav activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      <div
-        className={`${
-          showChat ? "hidden md:flex" : "flex"
-        } w-full md:w-80 flex-col bg-white border-r border-gray-200`}
-      >
-        <ChatSidebar
-          contacts={contacts}
-          selectedUser={selectedUser}
-          onSelectUser={handleSelectUser}
-          unreadCounts={unreadCounts}
-          onlineUsers={onlineUsers}
-          currentUserId={currentUserId}
-        />
-        <PendingRequests onRequestAccepted={loadContacts} />
+      {/* SideNav: Desktop-ல் இடதுபுறம் (Left), Mobile-ல் கீழே (Bottom) வர வழி செய்யப்பட்டுள்ளது */}
+      <div className="order-2 md:order-1 w-full md:w-auto z-20">
+        <SideNav activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div
-        className={`${
-          showChat ? "flex" : "hidden md:flex"
-        } flex-1 flex-col h-full relative bg-gray-50`}
-      >
-        {selectedUser ? (
-          <>
-            <ChatHeader
-              selectedUser={selectedUser}
-              onlineUsers={onlineUsers}
-              onBack={handleBack}
-              onAudioCall={handleAudioCall}
-              onVideoCall={handleVideoCall}
-            />
-            <ChatMessages
-              messages={messages}
-              currentUserId={currentUserId}
-              isTyping={isTyping}
-              selectedUser={selectedUser}
-            />
-            <MessageInput
-              message={message}
-              setMessage={setMessage}
-              onSendMessage={handleSendMessage}
-              selectedUser={selectedUser}
-              currentUserId={currentUserId}
-              socket={socket}
-            />
-          </>
-        ) : (
-          <div className="flex flex-1 items-center justify-center text-gray-400">
-            <p>Select a contact to start chatting</p>
-          </div>
-        )}
+      {/* Main App Container */}
+      <div className="order-1 md:order-2 flex flex-1 h-[calc(100vh-60px)] md:h-screen overflow-hidden">
+        <div
+          className={`${
+            showChat ? "hidden md:flex" : "flex"
+          } w-full md:w-80 flex-col bg-white border-r border-gray-200 h-full`}
+        >
+          <ChatSidebar
+            contacts={contacts}
+            selectedUser={selectedUser}
+            onSelectUser={handleSelectUser}
+            unreadCounts={unreadCounts}
+            onlineUsers={onlineUsers}
+            currentUserId={currentUserId}
+          />
+          <PendingRequests onRequestAccepted={loadContacts} />
+        </div>
 
-        {incomingCall && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow-2xl flex flex-col items-center space-y-4 max-w-sm w-full mx-4">
-              <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl font-bold">
-                {incomingCall.callerName?.[0]?.toUpperCase() || "U"}
+        <div
+          className={`${
+            showChat ? "flex" : "hidden md:flex"
+          } flex-1 flex-col h-full relative bg-gray-50`}
+        >
+          {selectedUser ? (
+            <>
+              <ChatHeader
+                selectedUser={selectedUser}
+                onlineUsers={onlineUsers}
+                onBack={handleBack}
+                onAudioCall={handleAudioCall}
+                onVideoCall={handleVideoCall}
+              />
+              <ChatMessages
+                messages={messages}
+                currentUserId={currentUserId}
+                isTyping={isTyping}
+                selectedUser={selectedUser}
+              />
+              <MessageInput
+                message={message}
+                setMessage={setMessage}
+                onSendMessage={handleSendMessage}
+                selectedUser={selectedUser}
+                currentUserId={currentUserId}
+                socket={socket}
+              />
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-gray-400">
+              <p>Select a contact to start chatting</p>
+            </div>
+          )}
+
+          {incomingCall && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-xl shadow-2xl flex flex-col items-center space-y-4 max-w-sm w-full mx-4">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl font-bold">
+                  {incomingCall.callerName?.[0]?.toUpperCase() || "U"}
+                </div>
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    Incoming {incomingCall.callType} call...
+                  </h3>
+                  <p className="text-gray-500 text-sm mt-1">
+                    {incomingCall.callerName || "Someone"} is calling you
+                  </p>
+                </div>
+                <div className="flex space-x-4 w-full pt-2">
+                  <button
+                    onClick={handleRejectCall}
+                    className="flex-1 bg-red-500 text-white py-2.5 rounded-lg font-medium hover:bg-red-600 transition"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    onClick={handleAcceptCall}
+                    className="flex-1 bg-green-500 text-white py-2.5 rounded-lg font-medium hover:bg-green-600 transition"
+                  >
+                    Accept
+                  </button>
+                </div>
               </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Incoming {incomingCall.callType} call...
+            </div>
+          )}
+
+          {isCalling && (
+            <div className="absolute inset-0 bg-gray-900 flex flex-col z-50">
+              <div className="p-4 flex justify-between items-center text-white bg-gradient-to-b from-black/60 to-transparent">
+                <h3 className="font-medium text-lg">
+                  {callType === "video" ? "Video Call" : "Audio Call"}
                 </h3>
-                <p className="text-gray-500 text-sm mt-1">
-                  {incomingCall.callerName || "Someone"} is calling you
-                </p>
               </div>
-              <div className="flex space-x-4 w-full pt-2">
-                <button
-                  onClick={handleRejectCall}
-                  className="flex-1 bg-red-500 text-white py-2.5 rounded-lg font-medium hover:bg-red-600 transition"
-                >
-                  Decline
-                </button>
-                <button
-                  onClick={handleAcceptCall}
-                  className="flex-1 bg-green-500 text-white py-2.5 rounded-lg font-medium hover:bg-green-600 transition"
-                >
-                  Accept
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {isCalling && (
-          <div className="absolute inset-0 bg-gray-900 flex flex-col z-50">
-            <div className="p-4 flex justify-between items-center text-white bg-gradient-to-b from-black/60 to-transparent">
-              <h3 className="font-medium text-lg">
-                {callType === "video" ? "Video Call" : "Audio Call"}
-              </h3>
-            </div>
-
-            <div className="flex-1 relative flex items-center justify-center p-4 overflow-hidden">
-              {callType === "video" ? (
-                <>
-                  <video
-                    ref={remoteVideoRef}
-                    autoPlay
-                    playsInline
-                    className="w-full h-full object-cover rounded-xl bg-black"
-                  />
-                  <div className="absolute bottom-6 right-6 w-32 h-48 md:w-48 md:h-36 bg-black rounded-lg overflow-hidden shadow-lg border-2 border-white/20">
+              <div className="flex-1 relative flex items-center justify-center p-4 overflow-hidden">
+                {callType === "video" ? (
+                  <>
                     <video
-                      ref={localVideoRef}
+                      ref={remoteVideoRef}
                       autoPlay
                       playsInline
-                      muted
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-xl bg-black"
                     />
+                    <div className="absolute bottom-6 right-6 w-32 h-48 md:w-48 md:h-36 bg-black rounded-lg overflow-hidden shadow-lg border-2 border-white/20">
+                      <video
+                        ref={localVideoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center space-y-4 text-white">
+                    <div className="w-28 h-28 bg-gray-800 rounded-full flex items-center justify-center text-4xl font-bold border-4 border-blue-500 animate-pulse">
+                      {activeCallUser?.name?.[0]?.toUpperCase() || selectedUser?.name?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <h2 className="text-2xl font-semibold">{activeCallUser?.name || selectedUser?.name || "User"}</h2>
+                    <p className="text-gray-400">Ongoing audio call...</p>
                   </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center space-y-4 text-white">
-                  <div className="w-28 h-28 bg-gray-800 rounded-full flex items-center justify-center text-4xl font-bold border-4 border-blue-500 animate-pulse">
-                    {activeCallUser?.name?.[0]?.toUpperCase() || selectedUser?.name?.[0]?.toUpperCase() || "U"}
-                  </div>
-                  <h2 className="text-2xl font-semibold">{activeCallUser?.name || selectedUser?.name || "User"}</h2>
-                  <p className="text-gray-400">Ongoing audio call...</p>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            <div className="p-6 bg-black/40 flex justify-center items-center space-x-6">
-              <button
-                onClick={() => cleanupCall(true)}
-                className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-medium shadow-lg transition transform active:scale-95"
-              >
-                End Call
-              </button>
+              <div className="p-6 bg-black/40 flex justify-center items-center space-x-6">
+                <button
+                  onClick={() => cleanupCall(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-medium shadow-lg transition transform active:scale-95"
+                >
+                  End Call
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
