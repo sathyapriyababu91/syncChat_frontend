@@ -2,13 +2,13 @@ import api from "./api";
 
 // Get My Contacts
 export const getContacts = async () => {
-  const res = await api.get("/api/users/contacts");
+  const res = await api.get("/contacts"); 
   return res.data;
 };
 
 // Send Friend Request
 export const sendRequest = async (receiverId) => {
-  const res = await api.post("/api/users/contact/request", {
+  const res = await api.post("/contact/request", {
     receiverId,
   });
   return res.data;
@@ -19,13 +19,13 @@ export const sendContactRequest = sendRequest;
 
 // Get Pending Requests
 export const getPendingRequests = async () => {
-  const res = await api.get("/api/users/contact/pending");
+  const res = await api.get("/contact/pending");
   return res.data;
 };
 
 // Accept Friend Request
 export const acceptRequest = async (requestId) => {
-  const res = await api.put("/api/users/contact/accept", {
+  const res = await api.put("/contact/accept", {
     requestId,
   });
   return res.data;
@@ -33,7 +33,7 @@ export const acceptRequest = async (requestId) => {
 
 // Reject Friend Request
 export const rejectRequest = async (requestId) => {
-  const res = await api.put("/api/users/contact/reject", {
+  const res = await api.put("/contact/reject", {
     requestId,
   });
   return res.data;
@@ -41,7 +41,7 @@ export const rejectRequest = async (requestId) => {
 
 // Remove Contact
 export const removeContact = async (contactUserId) => {
-  const res = await api.delete("/api/users/contact/remove", {
+  const res = await api.delete("/contact/remove", {
     data: {
       contactUserId,
     },
