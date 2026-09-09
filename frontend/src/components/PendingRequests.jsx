@@ -104,7 +104,7 @@ function PendingRequests({ onRequestAccepted }) {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center font-bold overflow-hidden shrink-0 shadow-md shadow-violet-500/15">
                 {user?.profilePic ? (
                   <img
-                    src={`http://localhost:5000${user.profilePic}`}
+                    src={`https://syncchat-rfzq.onrender.com${user.profilePic.startsWith("/") ? "" : "/"}${user.profilePic}`}
                     alt={user.name}
                     className="w-full h-full object-cover"
                   />

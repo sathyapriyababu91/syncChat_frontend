@@ -3,8 +3,18 @@ import { useNavigate } from "react-router-dom";
 function Navbar() {
   const navigate = useNavigate();
 
-  // Optionally, you can grab the user info to display their name
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  // Safely parse user info from localStorage
+  const getUser = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : {};
+    } catch (error) {
+      console.error("Failed to parse user from localStorage:", error);
+      return {};
+    }
+  };
+
+  const user = getUser();
 
   const logout = () => {
     localStorage.removeItem("token");

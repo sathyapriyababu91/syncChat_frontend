@@ -152,9 +152,9 @@ function MessageInput({
         accept="image/*,video/*,application/pdf"
       />
 
+      {/* FIXED: Removed typo 'conClick' attribute */}
       <button
         type="button"
-        conClick={() => fileInputRef.current?.click()}
         onClick={() => fileInputRef.current?.click()}
         className="text-xl text-gray-500 hover:text-violet-600 transition p-1"
         title="Attach File"

@@ -197,7 +197,7 @@ function ChatSidebar({
                     <div className="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-violet-500/20">
                       {user.profilePic ? (
                         <img
-                          src={`http://localhost:5000${user.profilePic}`}
+                          src={`https://syncchat-rfzq.onrender.com${user.profilePic.startsWith("/") ? "" : "/"}${user.profilePic}`}
                           alt={user.name}
                           className="w-full h-full object-cover"
                         />

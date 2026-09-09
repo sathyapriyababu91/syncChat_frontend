@@ -23,7 +23,7 @@ function ChatHeader({
   const profilePicUrl = selectedUser.profilePic
     ? selectedUser.profilePic.startsWith("http")
       ? selectedUser.profilePic
-      : `http://localhost:5000${selectedUser.profilePic.startsWith("/") ? "" : "/"}${selectedUser.profilePic}`
+      : `https://syncchat-rfzq.onrender.com${selectedUser.profilePic.startsWith("/") ? "" : "/"}${selectedUser.profilePic}`
     : null;
 
   return (
